@@ -18,6 +18,9 @@
 #include "../interface/RooSpline1D.h"
 #include "../interface/RooScaleLOSM.h"
 #include "../interface/rVrFLikelihood.h"
+#include "../interface/RooATGCFunction.h"
+#include "../interface/RooATGCProcessScaling.h"
+
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -90,5 +93,7 @@
 #pragma link C++ class RooStepBernstein+;
 #pragma link C++ class RooGaussStepBernstein+;
 #pragma link C++ class rVrFLikelihood+;
+#pragma link C++ class RooATGCFunction+;
+#pragma link C++ class RooATGCProcessScaling+;
 
 #endif
