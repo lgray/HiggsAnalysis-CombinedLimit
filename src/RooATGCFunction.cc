@@ -57,7 +57,13 @@ RooATGCFunction::RooATGCFunction(const RooATGCFunction& other,
   P_dk(0), P_dg1(0)
 { 
   initializeProfiles();
-  readProfiles(other);
+
+  initializeProfiles();
+  const char* pwd = gDirectory->GetPath();
+  TFile *f = TFile::Open(profileFilename,"READ");  
+  gDirectory->cd(pwd);  
+  readProfiles(*f);
+  f->Close();
 } 
 
 void RooATGCFunction::initializeProfiles() {
@@ -86,10 +92,15 @@ void RooATGCFunction::readProfiles(TDirectory& dir) const {
 }
 
 void RooATGCFunction::readProfiles(RooATGCFunction const& other) {
+
   for (int i = 0; i<=6; ++i) {
-    P_dk[i] = new TProfile2D(*(other.P_dk[i]));
+    std::cout << other.P_dk[i] << std::endl;
+    std::cout << other.P_dg1[i] << std::endl;
+    TString dkname = TString::Format("p%i_lambda_dkg", i);
+    P_dk[i] = dynamic_cast<TProfile2D *>(other.P_dk[i]->Clone(dkname+"new"));
     P_dk[i]->SetDirectory(0);
-    P_dg1[i] = new TProfile2D(*(other.P_dg1[i]));
+    TString dg1name = TString::Format("p%i_lambda_dg1", i);
+    P_dg1[i] = dynamic_cast<TProfile2D *>(other.P_dg1[i]->Clone(dg1name+"new"));
     P_dg1[i]->SetDirectory(0);
   }
 }

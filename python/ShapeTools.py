@@ -73,9 +73,12 @@ class ShapeBuilder(ModelBuilder):
                 if b in self.pdfModes: 
                     pdf_s.setAttribute('forceGen'+self.pdfModes[b].title())
                     pdf_b.setAttribute('forceGen'+self.pdfModes[b].title())
+                sumPlusNuis_s.Print("V")
+                pdf_s.Print("V")
                 self.out._import(pdf_s, ROOT.RooFit.RenameConflictNodes(b))
                 self.out._import(pdf_b, ROOT.RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
             else:
+                pdf_s.Print("V")
                 self.out._import(sum_s, ROOT.RooFit.RenameConflictNodes(b))
                 self.out._import(sum_b, ROOT.RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
     def doCombination(self):
