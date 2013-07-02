@@ -41,7 +41,7 @@ protected:
   RooRealProxy dg1;
   RooRealProxy SM_shape;
   
-  std::vector<double> integral_basis;
+  mutable std::map<std::string,std::vector<double> > integral_basis;
 
   TString profileFilename;
   
@@ -49,8 +49,9 @@ protected:
   TProfile2D ** P_dg1; //!
   
   void initializeProfiles();
-  void initializeNormalization(const RooAbsReal& dep,
-			       const RooAbsReal& shape);
+  void initializeNormalization(const std::string& rName,
+			       const RooAbsReal& dep,
+			       const RooAbsReal& shape) const;
   void readProfiles(RooATGCSemiAnalyticPdf const& other);
   
   virtual double evaluate() const ;

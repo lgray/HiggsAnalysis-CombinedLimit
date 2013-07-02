@@ -42,7 +42,7 @@ RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf(const char *name,
    P_dk(0), P_dg1(0)
 { 
   initializeProfiles();
-  initializeNormalization(_x,_SM_shape);
+  initializeNormalization(std::string(""),_x,_SM_shape);
   const char* pwd = gDirectory->GetPath();
   TFile *f = TFile::Open(parFilename,"READ");  
   gDirectory->cd(pwd);
@@ -76,13 +76,15 @@ void RooATGCSemiAnalyticPdf::initializeProfiles() {
   P_dg1 = new TProfile2D*[7]();
 }
 
-void RooATGCSemiAnalyticPdf::initializeNormalization(const RooAbsReal& dep,
-						     const RooAbsReal& shape) {
+void RooATGCSemiAnalyticPdf::initializeNormalization(const std::string& rName,
+						     const RooAbsReal& dep,
+						     const RooAbsReal& shape) const {
+  integral_basis[rName] = std::vector<double>();
   for( int i = 0; i<=6; ++i ) {
     RooFormulaVar temp("temp","integral of x^i * shape",
 		       Form("@1*@0**%i",i),RooArgList(dep,shape));
-    RooAbsReal* integral = temp.createIntegral(RooArgSet(dep),RooArgSet());
-    integral_basis.push_back(integral->getVal());
+    RooAbsReal* integral = temp.createIntegral(RooArgSet(dep),RooArgSet(),rName.c_str());
+    integral_basis[rName].push_back(integral->getVal());
     delete integral;
   }
 }
@@ -170,13 +172,19 @@ Double_t RooATGCSemiAnalyticPdf::evaluate() const
 
 int RooATGCSemiAnalyticPdf::
 getAnalyticalIntegral(RooArgSet& allVars,RooArgSet& analVars, 
-		      const char* /*rangeName = 0*/) const {
+		      const char* rangeName) const {
   if (matchArgs(allVars,analVars,x)) return 1 ;
   return 0 ;
 }
 
 double RooATGCSemiAnalyticPdf::
-analyticalIntegral(Int_t code, const char* /*rangeName = 0*/) const {
+analyticalIntegral(Int_t code, const char* rangeName) const {
+
+  std::string rName = ( rangeName == 0 ? std::string("") : std::string(rangeName) );
+  if( integral_basis.find(rName) == integral_basis.end() ) {
+    initializeNormalization(rName,x.arg(),SM_shape.arg());
+  }
+
   assert(code==1 && "invalid analytic integration code!");
 
   TProfile2D ** P = P_dg1;
@@ -203,7 +211,7 @@ analyticalIntegral(Int_t code, const char* /*rangeName = 0*/) const {
 
   double ret(0.);
   for(int i = 0; i<= 6; i++) {
-    ret += P[i]->Interpolate(v1,v2)*integral_basis[i];
+    ret += P[i]->Interpolate(v1,v2)*integral_basis[rName][i];
   }
   return ret;
 }
