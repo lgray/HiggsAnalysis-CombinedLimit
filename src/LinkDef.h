@@ -20,6 +20,7 @@
 #include "../interface/rVrFLikelihood.h"
 #include "../interface/RooATGCFunction.h"
 #include "../interface/RooATGCProcessScaling.h"
+#include "../interface/RooATGCSemiAnalyticPdf.h"
 
 
 #ifdef __CINT__
@@ -95,5 +96,6 @@
 #pragma link C++ class rVrFLikelihood+;
 #pragma link C++ class RooATGCFunction+;
 #pragma link C++ class RooATGCProcessScaling+;
+#pragma link C++ class RooATGCSemiAnalyticPdf+;
 
 #endif

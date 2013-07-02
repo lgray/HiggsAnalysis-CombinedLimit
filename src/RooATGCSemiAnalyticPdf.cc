@@ -8,7 +8,7 @@
 
 #include "Riostream.h" 
 
-#include "HiggsAnalysis/CombinedLimit/interface/RooATGCProcessScaling.h" 
+#include "HiggsAnalysis/CombinedLimit/interface/RooATGCSemiAnalyticPdf.h" 
 
 #include <math.h> 
 #include "TMath.h" 
@@ -16,23 +16,23 @@
 
 #include "TFile.h"
 
-ClassImpUnique(RooATGCProcessScaling,MAGICWORDOFSOMESORT) 
+ClassImpUnique(RooATGCSemiAnalyticPdf,MAGICWORDOFSOMESORT) 
 
-RooATGCProcessScaling::RooATGCProcessScaling() : 
+RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf() : 
   P_dk(0), P_dg1(0)
 {
   initializeProfiles();
 }
 
-RooATGCProcessScaling::RooATGCProcessScaling(const char *name, 
+RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf(const char *name, 
 					       const char *title, 
 					       RooAbsReal& _x,
-					       RooAbsReal& _dkg,
 					       RooAbsReal& _lZ,
+					       RooAbsReal& _dkg,
 					       RooAbsReal& _dg1,
 					       RooAbsReal& _SM_shape,
 					       const char * parFilename) :
-   RooAbsReal(name,title),
+   RooAbsPdf(name,title),
    x("observable","observable",this,_x),
    lZ("lZ","lZ",this,_lZ),
    dkg("dkg","dkg",this,_dkg),
@@ -51,15 +51,14 @@ RooATGCProcessScaling::RooATGCProcessScaling(const char *name,
   f->Close();
 } 
 
-RooATGCProcessScaling::RooATGCProcessScaling(const RooATGCProcessScaling& other, 
+RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf(const RooATGCSemiAnalyticPdf& other, 
 					       const char* name) :  
-  RooAbsReal(other,name),
+  RooAbsPdf(other,name),
   x("observable",this,other.lZ),
   lZ("lZ",this,other.lZ),
   dkg("dkg",this,other.dkg),
   dg1("dg1",this,other.dg1),
   SM_shape("SM_shape",this,other.SM_shape),
-  SM_integral(other.SM_integral),
   integral_basis(other.integral_basis),
   profileFilename(other.profileFilename),
   P_dk(0), P_dg1(0)
@@ -72,26 +71,23 @@ RooATGCProcessScaling::RooATGCProcessScaling(const RooATGCProcessScaling& other,
   f->Close();
 } 
 
-void RooATGCProcessScaling::initializeProfiles() {
+void RooATGCSemiAnalyticPdf::initializeProfiles() {
   P_dk = new TProfile2D*[7]();
   P_dg1 = new TProfile2D*[7]();
 }
 
-void RooATGCProcessScaling::initializeNormalization(const RooAbsReal& dep,
-						    const RooAbsReal& shape) {
-  RooAbsReal* integral = shape.createIntegral(RooArgSet(dep),RooArgSet());
-  SM_integral = integral->getVal();
-  delete integral;
+void RooATGCSemiAnalyticPdf::initializeNormalization(const RooAbsReal& dep,
+						     const RooAbsReal& shape) {
   for( int i = 0; i<=6; ++i ) {
     RooFormulaVar temp("temp","integral of x^i * shape",
 		       Form("@1*@0**%i",i),RooArgList(dep,shape));
-    integral = temp.createIntegral(RooArgSet(dep),RooArgSet());
+    RooAbsReal* integral = temp.createIntegral(RooArgSet(dep),RooArgSet());
     integral_basis.push_back(integral->getVal());
     delete integral;
   }
 }
 
-void RooATGCProcessScaling::readProfiles(TDirectory& dir) const {
+void RooATGCSemiAnalyticPdf::readProfiles(TDirectory& dir) const {
 
   int i;
   for(i=0; i<=6; ++i) {
@@ -111,7 +107,7 @@ void RooATGCProcessScaling::readProfiles(TDirectory& dir) const {
   // }
 }
 
-void RooATGCProcessScaling::readProfiles(RooATGCProcessScaling const& other) {
+void RooATGCSemiAnalyticPdf::readProfiles(RooATGCSemiAnalyticPdf const& other) {
 
   for (int i = 0; i<=6; ++i) {
     std::cout << other.P_dk[i] << std::endl;
@@ -125,7 +121,7 @@ void RooATGCProcessScaling::readProfiles(RooATGCProcessScaling const& other) {
   }
 }
 
-RooATGCProcessScaling::~RooATGCProcessScaling() {
+RooATGCSemiAnalyticPdf::~RooATGCSemiAnalyticPdf() {
   for(int i = 0; i<7; ++i) {
     if (P_dk[i])
       delete P_dk[i];
@@ -136,8 +132,53 @@ RooATGCProcessScaling::~RooATGCProcessScaling() {
   delete[] P_dg1;
 }
 
-Double_t RooATGCProcessScaling::evaluate() const 
+Double_t RooATGCSemiAnalyticPdf::evaluate() const 
 { 
+  // ENTER EXPRESSION IN TERMS OF VARIABLE ARGUMENTS HERE 
+
+  TProfile2D ** P = P_dg1;
+  double v1(lZ), v2(dg1);
+  if(TMath::Abs(dg1)<0.000001) {
+    P = P_dk;
+    v2 = dkg;
+  }
+
+  if (not P[0]) {
+    TFile f(profileFilename);
+    readProfiles(f);
+    f.Close();
+  }
+
+  if (v1 < P[0]->GetXaxis()->GetXmin())
+    v1 = P[0]->GetXaxis()->GetXmin();
+  if (v1 > P[0]->GetXaxis()->GetXmax())
+    v1 = P[0]->GetXaxis()->GetXmax();
+  if (v2 < P[0]->GetYaxis()->GetXmin())
+    v2 = P[0]->GetYaxis()->GetXmin();
+  if (v2 > P[0]->GetYaxis()->GetXmax())
+    v2 = P[0]->GetYaxis()->GetXmax();
+ 
+  double ret(0.);
+  for(int i = 0; i<= 6; i++) {
+    // std::cout << P_dk[i]->GetName() << '\n';
+    ret += P[i]->Interpolate(v1, v2)*TMath::Power(x, i)*SM_shape;
+  }
+
+  if (ret < 0.) ret = 0.;
+  return ret; 
+}
+
+int RooATGCSemiAnalyticPdf::
+getAnalyticalIntegral(RooArgSet& allVars,RooArgSet& analVars, 
+		      const char* /*rangeName = 0*/) const {
+  if (matchArgs(allVars,analVars,x)) return 1 ;
+  return 0 ;
+}
+
+double RooATGCSemiAnalyticPdf::
+analyticalIntegral(Int_t code, const char* /*rangeName = 0*/) const {
+  assert(code==1 && "invalid analytic integration code!");
+
   TProfile2D ** P = P_dg1;
   double v1(lZ), v2(dg1);
   if(TMath::Abs(dg1)<0.000001) {
@@ -164,6 +205,5 @@ Double_t RooATGCProcessScaling::evaluate() const
   for(int i = 0; i<= 6; i++) {
     ret += P[i]->Interpolate(v1,v2)*integral_basis[i];
   }
-  return ret/SM_integral;
+  return ret;
 }
-
