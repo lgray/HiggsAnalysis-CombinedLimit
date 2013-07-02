@@ -13,10 +13,12 @@ public:
   
   RooATGCSemiAnalyticPdf ();
   RooATGCSemiAnalyticPdf (const char * name, const char * title,
-		   RooAbsReal& _x, RooAbsReal& _lZ,
-		   RooAbsReal& _dkg, RooAbsReal& _dg1,
-		   RooAbsReal& _SM_shape,
-		   const char * parFilename);
+			  RooAbsReal& _x, 
+			  RooAbsReal& _dkg, 
+			  RooAbsReal& _lZ,
+			  RooAbsReal& _dg1,
+			  RooAbsReal& _SM_shape,
+			  const char * parFilename);
   RooATGCSemiAnalyticPdf (const RooATGCSemiAnalyticPdf& other, const char * name);
   virtual TObject * clone(const char * newname) const { 
     return new RooATGCSemiAnalyticPdf(*this, newname);
@@ -24,11 +26,11 @@ public:
   
   virtual ~RooATGCSemiAnalyticPdf ();
   
-  int getAnalyticalIntegral(RooArgSet& allVars, 
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, 
 			    RooArgSet& analVars, 
 			    const char* rangeName = 0) const;
 
-  double analyticalIntegral(Int_t code, const char* rangeName = 0) const;
+  Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
 
   void readProfiles(TDirectory& dir) const ;
   TString getProfileFilename() const { return profileFilename; }

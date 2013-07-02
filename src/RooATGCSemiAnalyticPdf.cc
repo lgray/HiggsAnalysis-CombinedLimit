@@ -27,8 +27,8 @@ RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf() :
 RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf(const char *name, 
 					       const char *title, 
 					       RooAbsReal& _x,
-					       RooAbsReal& _lZ,
 					       RooAbsReal& _dkg,
+					       RooAbsReal& _lZ,					       
 					       RooAbsReal& _dg1,
 					       RooAbsReal& _SM_shape,
 					       const char * parFilename) :
@@ -54,7 +54,7 @@ RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf(const char *name,
 RooATGCSemiAnalyticPdf::RooATGCSemiAnalyticPdf(const RooATGCSemiAnalyticPdf& other, 
 					       const char* name) :  
   RooAbsPdf(other,name),
-  x("observable",this,other.lZ),
+  x("observable",this,other.x),
   lZ("lZ",this,other.lZ),
   dkg("dkg",this,other.dkg),
   dg1("dg1",this,other.dg1),
@@ -170,22 +170,22 @@ Double_t RooATGCSemiAnalyticPdf::evaluate() const
   return ret; 
 }
 
-int RooATGCSemiAnalyticPdf::
+Int_t RooATGCSemiAnalyticPdf::
 getAnalyticalIntegral(RooArgSet& allVars,RooArgSet& analVars, 
-		      const char* rangeName) const {
+		      const char* /*rangeName*/) const {  
   if (matchArgs(allVars,analVars,x)) return 1 ;
   return 0 ;
 }
 
-double RooATGCSemiAnalyticPdf::
-analyticalIntegral(Int_t code, const char* rangeName) const {
+Double_t RooATGCSemiAnalyticPdf::
+analyticalIntegral(Int_t code, const char* rangeName) const {  
+
+  assert(code==1 && "invalid analytic integration code!");
 
   std::string rName = ( rangeName == 0 ? std::string("") : std::string(rangeName) );
   if( integral_basis.find(rName) == integral_basis.end() ) {
     initializeNormalization(rName,x.arg(),SM_shape.arg());
   }
-
-  assert(code==1 && "invalid analytic integration code!");
 
   TProfile2D ** P = P_dg1;
   double v1(lZ), v2(dg1);
@@ -210,7 +210,7 @@ analyticalIntegral(Int_t code, const char* rangeName) const {
     v2 = P[0]->GetYaxis()->GetXmax();
 
   double ret(0.);
-  for(int i = 0; i<= 6; i++) {
+  for(int i = 0; i<= 6; ++i) {
     ret += P[i]->Interpolate(v1,v2)*integral_basis[rName][i];
   }
   return ret;
