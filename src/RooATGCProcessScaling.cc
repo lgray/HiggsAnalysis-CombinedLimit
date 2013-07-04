@@ -25,15 +25,14 @@ RooATGCProcessScaling::RooATGCProcessScaling() :
 }
 
 RooATGCProcessScaling::RooATGCProcessScaling(const char *name, 
-					       const char *title, 
-					       RooAbsReal& _x,
-					       RooAbsReal& _dkg,
-					       RooAbsReal& _lZ,
-					       RooAbsReal& _dg1,
-					       RooAbsReal& _SM_shape,
-					       const char * parFilename) :
+					     const char *title,
+					     RooAbsReal& _x,
+					     RooAbsReal& _dkg,
+					     RooAbsReal& _lZ,
+					     RooAbsReal& _dg1,
+					     RooAbsReal& _SM_shape,
+					     const char * parFilename) :
    RooAbsReal(name,title),
-   x("observable","observable",this,_x),
    lZ("lZ","lZ",this,_lZ),
    dkg("dkg","dkg",this,_dkg),
    dg1("dg1","dg1",this,_dg1),
@@ -51,10 +50,10 @@ RooATGCProcessScaling::RooATGCProcessScaling(const char *name,
   f->Close();
 } 
 
-RooATGCProcessScaling::RooATGCProcessScaling(const RooATGCProcessScaling& other, 
-					       const char* name) :  
+RooATGCProcessScaling::
+RooATGCProcessScaling(const RooATGCProcessScaling& other, 
+		      const char* name) :  
   RooAbsReal(other,name),
-  x("observable",this,other.lZ),
   lZ("lZ",this,other.lZ),
   dkg("dkg",this,other.dkg),
   dg1("dg1",this,other.dg1),
