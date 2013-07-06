@@ -33,7 +33,6 @@ protected:
   RooRealProxy lZ;
   RooRealProxy dkg;
   RooRealProxy dg1;
-  RooRealProxy SM_shape;
   
   double SM_integral;
   std::vector<double> integral_basis;
@@ -52,7 +51,7 @@ protected:
   
 private:
   
-  ClassDef(RooATGCProcessScaling, 2) // aTGC function 
+  ClassDef(RooATGCProcessScaling, 3) // aTGC function 
 };
 
 #endif
