@@ -45,6 +45,7 @@ class MultiSignalModel(PhysicsModel):
         self.poiMap  = []
         self.pois    = {}
         self.verbose = False
+        self.factories = []
     def setPhysicsOptions(self,physOptions):
         for po in physOptions:
             if po.startswith("higgsMassRange="):
@@ -56,10 +57,15 @@ class MultiSignalModel(PhysicsModel):
             if po.startswith("verbose"):
                 self.verbose = True
             if po.startswith("map="):
-                (maplist,poi) = po.replace("map=","").split(":")
+                (maplist,poi) = po.replace("map=","").split(":",1)
                 maps = maplist.split(",")
                 poiname = re.sub("\[.*","", poi)
-                if poiname not in self.pois:
+                if "=" in poi:
+                    poiname,expr = poi.split("=")
+                    poi = expr.replace(";",":")
+                    if self.verbose: print "Will create expression ",poiname," with factory ",poi
+                    self.factories.append(poi)
+                elif poiname not in self.pois and poi not in [ "1", "0"]:
                     if self.verbose: print "Will create a POI ",poiname," with factory ",poi
                     self.pois[poiname] = poi
                 if self.verbose:  print "Mapping ",poiname," to ",maps," patterns"
@@ -68,9 +74,13 @@ class MultiSignalModel(PhysicsModel):
         """Create POI and other parameters, and define the POI set."""
         # --- Higgs Mass as other parameter ----
         poiNames = []
+        # first do all non-factory statements, so all params are defined
         for pn,pf in self.pois.items():
             poiNames.append(pn)
             self.modelBuilder.doVar(pf)
+        # then do all factory statements (so vars are already defined)
+        for pf in self.factories:
+            self.modelBuilder.factory_(pf)
         if self.modelBuilder.out.var("MH"):
             if len(self.mHRange):
                 print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
@@ -97,6 +107,7 @@ class MultiSignalModel(PhysicsModel):
             for l in list:
                 if re.match(l, string): poi = p
         print "Will scale ", string, " by ", poi
+        if poi in ["1","0"]: return int(poi)
         return poi;
 
 
@@ -541,11 +552,11 @@ class DoubleRatioHiggs(SMLikeHiggsModel):
         # --- Signal Strength as only POI --- 
         self.modelBuilder.doVar("rho[1,0,4]")
         self.modelBuilder.doVar("Rvf[1,0,4]")
-        self.modelBuilder.doVar("rf_%s[1,0,4]" % self.modes[2])
-        self.modelBuilder.factory_("prod::rf_%s(    rho, r_%s)" % (self.modes[1], self.modes[2]))
-        self.modelBuilder.factory_("prod::rv_%s(Rvf,rho, r_%s)" % (self.modes[1], self.modes[2]))
-        self.modelBuilder.factory_("prod::rv_%s(Rvf,     r_%s)" % (self.modes[2], self.modes[2]))
-        poi = "rho,Rvf,rf_%s" % self.modes[2]
+        self.modelBuilder.doVar("rf_%s[1,0,4]" % self.modes[0])
+        self.modelBuilder.factory_("prod::rf_%s(    rho, rf_%s)" % (self.modes[1], self.modes[0]))
+        self.modelBuilder.factory_("prod::rv_%s(Rvf,rho, rf_%s)" % (self.modes[1], self.modes[0]))
+        self.modelBuilder.factory_("prod::rv_%s(Rvf,     rf_%s)" % (self.modes[0], self.modes[0]))
+        poi = "rho,Rvf,rf_%s" % self.modes[0]
         if self.floatMass:
             if self.modelBuilder.out.var("MH"):
                 self.modelBuilder.out.var("MH").setRange(float(self.mHRange[0]),float(self.mHRange[1]))

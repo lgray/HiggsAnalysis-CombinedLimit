@@ -21,7 +21,7 @@
 #include "../interface/RooATGCFunction.h"
 #include "../interface/RooATGCProcessScaling.h"
 #include "../interface/RooATGCSemiAnalyticPdf.h"
-
+#include "../interface/RooMultiPdf.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -97,5 +97,6 @@
 #pragma link C++ class RooATGCFunction+;
 #pragma link C++ class RooATGCProcessScaling+;
 #pragma link C++ class RooATGCSemiAnalyticPdf+;
+#pragma link C++ class RooMultiPdf+;
 
 #endif
