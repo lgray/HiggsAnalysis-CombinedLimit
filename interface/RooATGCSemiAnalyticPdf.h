@@ -49,6 +49,7 @@ protected:
   
   TProfile2D ** P_dk; //!
   TProfile2D ** P_dg1; //!
+  TProfile2D ** P_dkdg1; //!
   
   void initializeProfiles();
   void initializeNormalization(const std::string& rName,

@@ -19,7 +19,7 @@
 ClassImpUnique(RooATGCProcessScaling,MAGICWORDOFSOMESORT) 
 
 RooATGCProcessScaling::RooATGCProcessScaling() : 
-  P_dk(0), P_dg1(0)
+  P_dk(0), P_dg1(0), P_dkdg1(0)
 {
   initializeProfiles();
 }
@@ -44,7 +44,6 @@ RooATGCProcessScaling::RooATGCProcessScaling(const char *name,
   const char* pwd = gDirectory->GetPath();
   TFile *f = TFile::Open(parFilename,"READ");  
   gDirectory->cd(pwd);
-  std::cout << "opened the input file!" << std::endl;
   readProfiles(*f);
   f->Close();
 } 
@@ -59,7 +58,7 @@ RooATGCProcessScaling(const RooATGCProcessScaling& other,
   SM_integral(other.SM_integral),
   integral_basis(other.integral_basis),
   profileFilename(other.profileFilename),
-  P_dk(0), P_dg1(0)
+  P_dk(0), P_dg1(0), P_dkdg1(0)
 { 
   initializeProfiles();
   const char* pwd = gDirectory->GetPath();
@@ -72,6 +71,7 @@ RooATGCProcessScaling(const RooATGCProcessScaling& other,
 void RooATGCProcessScaling::initializeProfiles() {
   P_dk = new TProfile2D*[7]();
   P_dg1 = new TProfile2D*[7]();
+  P_dkdg1 = new TProfile2D*[7]();
 }
 
 void RooATGCProcessScaling::initializeNormalization(const RooAbsReal& dep,
@@ -101,6 +101,9 @@ void RooATGCProcessScaling::readProfiles(TDirectory& dir) const {
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
     P_dg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dg1name)->Clone(dg1name+"new"));
     P_dg1[i]->SetDirectory(0);
+    TString dkdg1name = TString::Format("p%i_dkg_dg1", i);
+    P_dkdg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dkdg1name)->Clone(dkdg1name+"new"));
+    P_dkdg1[i]->SetDirectory(0);
   }
 
   // for (i=0; i<=6; i++) {
@@ -110,15 +113,16 @@ void RooATGCProcessScaling::readProfiles(TDirectory& dir) const {
 
 void RooATGCProcessScaling::readProfiles(RooATGCProcessScaling const& other) {
 
-  for (int i = 0; i<=6; ++i) {
-    std::cout << other.P_dk[i] << std::endl;
-    std::cout << other.P_dg1[i] << std::endl;
+  for (int i = 0; i<=6; ++i) {    
     TString dkname = TString::Format("p%i_lambda_dkg", i);
     P_dk[i] = dynamic_cast<TProfile2D *>(other.P_dk[i]->Clone(dkname+"new"));
     P_dk[i]->SetDirectory(0);
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
     P_dg1[i] = dynamic_cast<TProfile2D *>(other.P_dg1[i]->Clone(dg1name+"new"));
     P_dg1[i]->SetDirectory(0);
+    TString dkdg1name = TString::Format("p%i_dkg_dg1", i);
+    P_dkdg1[i] = dynamic_cast<TProfile2D *>(other.P_dkdg1[i]->Clone(dkdg1name+"new"));
+    P_dkdg1[i]->SetDirectory(0);
   }
 }
 
@@ -128,9 +132,12 @@ RooATGCProcessScaling::~RooATGCProcessScaling() {
       delete P_dk[i];
     if (P_dg1[i])
       delete P_dg1[i];
+    if (P_dkdg1[i])
+      delete P_dkdg1[i];
   }
   delete[] P_dk;
   delete[] P_dg1;
+  delete[] P_dkdg1;
 }
 
 Double_t RooATGCProcessScaling::evaluate() const 
@@ -140,6 +147,10 @@ Double_t RooATGCProcessScaling::evaluate() const
   if(TMath::Abs(dg1)<0.000001) {
     P = P_dk;
     v2 = dkg;
+  } else if ( TMath::Abs(lZ) < 1e-6 ) {
+    P = P_dkdg1;
+    v1 = dkg;
+    v2 = dg1;
   }
 
   if (not P[0]) {
