@@ -11,6 +11,8 @@
 class RooATGCFunction : public RooAbsReal {
 public:
   
+  enum LimitType{ dkglZ, dg1lZ, dkdg1, notype };
+
   RooATGCFunction ();
   RooATGCFunction (const char * name, const char * title,
 		   RooAbsReal& _x, RooAbsReal& _lZ,
@@ -19,7 +21,7 @@ public:
   RooATGCFunction (const RooATGCFunction& other, const char * name);
   virtual TObject * clone(const char * newname) const { 
     return new RooATGCFunction(*this, newname);
-    }
+  }
   
   virtual ~RooATGCFunction ();
     
@@ -33,7 +35,9 @@ protected:
   RooRealProxy dkg;
   RooRealProxy dg1;
   
-    TString profileFilename;
+  LimitType type_;
+
+  TString profileFilename;
   
   TProfile2D ** P_dk; //!
   TProfile2D ** P_dg1; //!

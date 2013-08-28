@@ -19,7 +19,7 @@
 ClassImpUnique(RooATGCProcessScaling,MAGICWORDOFSOMESORT) 
 
 RooATGCProcessScaling::RooATGCProcessScaling() : 
-  P_dk(0), P_dg1(0), P_dkdg1(0)
+  type_(notype), P_dk(0), P_dg1(0), P_dkdg1(0)
 {
   initializeProfiles();
 }
@@ -36,6 +36,7 @@ RooATGCProcessScaling::RooATGCProcessScaling(const char *name,
    lZ("lZ","lZ",this,_lZ),
    dkg("dkg","dkg",this,_dkg),
    dg1("dg1","dg1",this,_dg1),
+   type_(notype),
    profileFilename(parFilename),
    P_dk(0), P_dg1(0)
 { 
@@ -55,6 +56,7 @@ RooATGCProcessScaling(const RooATGCProcessScaling& other,
   lZ("lZ",this,other.lZ),
   dkg("dkg",this,other.dkg),
   dg1("dg1",this,other.dg1),
+  type_(other.type_),
   SM_integral(other.SM_integral),
   integral_basis(other.integral_basis),
   profileFilename(other.profileFilename),
@@ -143,14 +145,23 @@ RooATGCProcessScaling::~RooATGCProcessScaling() {
 Double_t RooATGCProcessScaling::evaluate() const 
 { 
   TProfile2D ** P = P_dg1;
-  double v1(lZ), v2(dg1);
-  if(TMath::Abs(dg1)<0.000001) {
-    P = P_dk;
+  double v1(0.0), v2(0.0);
+  switch(type_) {
+  case dkglZ:
+    v1 = lZ;
     v2 = dkg;
-  } else if ( TMath::Abs(lZ) < 1e-6 ) {
-    P = P_dkdg1;
+    break;
+  case dg1lZ:
+    v1 = lZ;
+    v2 = dg1;
+    break;
+  case dkdg1:
     v1 = dkg;
     v2 = dg1;
+    break;
+  default:
+    assert(NULL && "invalid limit type!");
+    break;
   }
 
   if (not P[0]) {

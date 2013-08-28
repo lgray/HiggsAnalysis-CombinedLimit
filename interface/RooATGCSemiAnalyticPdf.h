@@ -11,6 +11,8 @@
 class RooATGCSemiAnalyticPdf : public RooAbsPdf {
 public:
   
+  enum LimitType{ dkglZ, dg1lZ, dkdg1, notype };
+
   RooATGCSemiAnalyticPdf ();
   RooATGCSemiAnalyticPdf (const char * name, const char * title,
 			  RooAbsReal& _x, 
@@ -18,7 +20,8 @@ public:
 			  RooAbsReal& _lZ,
 			  RooAbsReal& _dg1,
 			  RooAbsReal& _SM_shape,
-			  const char * parFilename);
+			  const char * parFilename,
+			  const unsigned& lt);
   RooATGCSemiAnalyticPdf (const RooATGCSemiAnalyticPdf& other, const char * name);
   virtual TObject * clone(const char * newname) const { 
     return new RooATGCSemiAnalyticPdf(*this, newname);
@@ -26,6 +29,8 @@ public:
   
   virtual ~RooATGCSemiAnalyticPdf ();
   
+  void setLimitType(const unsigned& lt) { type_ = (LimitType)lt; }
+
   Int_t getAnalyticalIntegral(RooArgSet& allVars, 
 			    RooArgSet& analVars, 
 			    const char* rangeName = 0) const;
@@ -43,6 +48,8 @@ protected:
   RooRealProxy dg1;
   RooRealProxy SM_shape;
   
+  LimitType type_;
+
   mutable std::map<std::string,std::vector<double> > integral_basis;
 
   TString profileFilename;

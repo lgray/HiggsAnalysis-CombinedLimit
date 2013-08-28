@@ -11,6 +11,8 @@
 class RooATGCProcessScaling : public RooAbsReal {
 public:
   
+  enum LimitType{ dkglZ, dg1lZ, dkdg1, notype };
+
   RooATGCProcessScaling ();
   RooATGCProcessScaling (const char * name, const char * title,
 			 RooAbsReal& _x, RooAbsReal& _dkg,
@@ -22,6 +24,8 @@ public:
     return new RooATGCProcessScaling(*this, newname);
     }
   
+  void setLimitType(const unsigned& lt) { type_ = (LimitType)lt; }
+
   virtual ~RooATGCProcessScaling ();  
   
   void readProfiles(TDirectory& dir) const ;
@@ -34,6 +38,8 @@ protected:
   RooRealProxy dkg;
   RooRealProxy dg1;
   
+  LimitType type_;
+
   double SM_integral;
   std::vector<double> integral_basis;
 
