@@ -148,18 +148,21 @@ Double_t RooATGCSemiAnalyticPdf::evaluate() const
 { 
   // ENTER EXPRESSION IN TERMS OF VARIABLE ARGUMENTS HERE 
 
-  TProfile2D ** P = P_dg1;
+  TProfile2D ** P = NULL;
   double v1(0.0), v2(0.0);
   switch(type_) {
   case dkglZ:
+    P = P_dk;
     v1 = lZ;
     v2 = dkg;
     break;
   case dg1lZ:
+    P = P_dg1;
     v1 = lZ;
     v2 = dg1;
     break;
   case dkdg1:
+    P = P_dkdg1;
     v1 = dkg;
     v2 = dg1;
     break;
@@ -210,18 +213,21 @@ analyticalIntegral(Int_t code, const char* rangeName) const {
     initializeNormalization(rName,x.arg(),SM_shape.arg());
   }
 
-  TProfile2D ** P = P_dg1;
+  TProfile2D ** P = NULL;
   double v1(0.0), v2(0.0);
   switch(type_) {
   case dkglZ:
+    P = P_dk;
     v1 = lZ;
     v2 = dkg;
     break;
   case dg1lZ:
+    P = P_dg1;
     v1 = lZ;
     v2 = dg1;
     break;
   case dkdg1:
+    P = P_dkdg1;
     v1 = dkg;
     v2 = dg1;
     break;

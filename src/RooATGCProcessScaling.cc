@@ -38,7 +38,7 @@ RooATGCProcessScaling::RooATGCProcessScaling(const char *name,
    dg1("dg1","dg1",this,_dg1),
    type_(notype),
    profileFilename(parFilename),
-   P_dk(0), P_dg1(0)
+   P_dk(0), P_dg1(0), P_dkdg1(0)
 { 
   initializeProfiles();
   initializeNormalization(_x,_SM_shape);
@@ -144,18 +144,21 @@ RooATGCProcessScaling::~RooATGCProcessScaling() {
 
 Double_t RooATGCProcessScaling::evaluate() const 
 { 
-  TProfile2D ** P = P_dg1;
+  TProfile2D ** P = NULL;
   double v1(0.0), v2(0.0);
   switch(type_) {
   case dkglZ:
+    P = P_dk;
     v1 = lZ;
     v2 = dkg;
     break;
   case dg1lZ:
+    P = P_dg1;
     v1 = lZ;
     v2 = dg1;
     break;
   case dkdg1:
+    P = P_dkdg1;
     v1 = dkg;
     v2 = dg1;
     break;
