@@ -183,7 +183,7 @@ ClassImp(RooGaussStepBernstein)
 namespace {
   double zeroth(const double x, const double m, const double s, 
 		const double a, const double b) {
-    const double root2 = sqrt(2.0);    
+    constexpr double root2 = sqrt(2.0);    
     const double erf_parm_a = (a+m-x)/(root2*s);
     const double erf_parm_b = (b+m-x)/(root2*s);
 
@@ -192,7 +192,7 @@ namespace {
   }
   double zeroth_integral(const double x, const double m, const double s,
 			 const double a, const double b) {
-    const double root2 = sqrt(2.0);    
+    constexpr double root2 = sqrt(2.0);    
     const double root2overpi = sqrt(2.0/M_PI);    
     const double rootpiover2 = sqrt(M_PI/2.0);  
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -207,8 +207,8 @@ namespace {
   }
   double first(const double x, const double m, const double s,
 	       const double a, const double b) {
-    const double root2 = sqrt(2);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double root2 = sqrt(2);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_parm_a = (a+m-x)/(root2*s);
     const double erf_parm_b = (b+m-x)/(root2*s);
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -219,9 +219,9 @@ namespace {
   }
   double first_integral(const double x, const double m, const double s,
 			const double a, const double b) {
-    const double root2 = sqrt(2.0);    
-    const double root2overpi = sqrt(2.0/M_PI);    
-    const double rootpiover2 = sqrt(M_PI/2.0);  
+    constexpr double root2 = sqrt(2.0);    
+    constexpr double root2overpi = sqrt(2.0/M_PI);    
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);  
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
     const double gaus_b = exp(-0.5*(b+m-x)*(b+m-x)/(s*s));
     const double erf_a = erf((a+m-x)/(root2*s));
@@ -234,9 +234,9 @@ namespace {
   }
   double second(const double x, const double m, const double s,
 		const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb = pow(a-b,2.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -247,9 +247,9 @@ namespace {
   }
   double second_integral(const double x, const double m, const double s,
 			 const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb = 3*pow(a-b,2.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -282,9 +282,9 @@ namespace {
   }
   double third(const double x, const double m, const double s,
 	       const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb   = pow(a-b,3.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -302,9 +302,9 @@ namespace {
   }
   double third_integral(const double x, const double m, const double s,
 			const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb   = 4*pow(a-b,3.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -355,9 +355,9 @@ namespace {
   }
   double fourth(const double x, const double m, const double s, 
 		const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb   = pow(a-b,4.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -404,9 +404,9 @@ namespace {
   }
   double fourth_integral(const double x, const double m, const double s,
 			 const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb   = 5*pow(a-b,4.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -465,9 +465,9 @@ namespace {
   }
   double fifth(const double x, const double m, const double s,
 	       const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb   = pow(a-b,5.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -518,9 +518,9 @@ namespace {
   }
   double fifth_integral(const double x, const double m, const double s,
 			const double a, const double b) {
-    const double root2 = sqrt(2);
+    constexpr double root2 = sqrt(2);
     const double amb   = 6*pow(a-b,5.0);
-    const double rootpiover2 = sqrt(M_PI/2.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
     const double erf_a = erf((a+m-x)/(root2*s));
     const double erf_b = erf((b+m-x)/(root2*s));
     const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
@@ -591,48 +591,79 @@ namespace {
 	       gaus_b*s*poly2 +
 	       rootpiover2*(poly3*erf_a - poly4*erf_b ) )/amb;    
   }
-  double sixth(const double x, const double m, const double s) {
-    const double root2 = sqrt(2);
-    const double rootpiover2 = sqrt(M_PI/2.0);
-    const double erf_parm = (m-x)/(root2*s);
-    const double gaus = exp(-0.5*(m-x)*(m-x)/(s*s));
+  double sixth(const double x, const double m, const double s,
+	       const double a, const double b) {
+    constexpr double root2 = sqrt(2);
+    const double amb   = pow(a-b,6.0);
+    constexpr double rootpiover2 = sqrt(M_PI/2.0);
+    const double erf_a = erf((a+m-x)/(root2*s));
+    const double erf_b = erf((b+m-x)/(root2*s));
+    const double gaus_a = exp(-0.5*(a+m-x)*(a+m-x)/(s*s));
+    const double gaus_b = exp(-0.5*(b+m-x)*(b+m-x)/(s*s));
     
-    const double x2 = pow(x,2);
-    const double x3 = x2*x;
-    const double x4 = x3*x;
-    const double x5 = x4*x;
-    const double x6 = x5*x;
+    const double x2 = x*x;
+    const double x3 = x*x2;
+    const double x4 = x*x3;
+    const double x5 = x*x4;
+    const double x6 = x*x5;
+    
+    const double m2 = m*m;
+    const double m3 = m*m2;
+    const double m4 = m*m3;
+    const double m5 = m*m4;
+    const double m6 = m*m5;
+    
+    const double a2 = a*a;
+    const double a3 = a*a2;
+    const double a4 = a*a3;
+    const double a5 = a*a4;
+    const double a6 = a*a5;
 
-    const double mmx2 = pow(m-x,2);
-    //const double mmx3 = mmx2*(m-x);
-    //const double mmx4 = mmx3*(m-x);
-    //const double mmx5 = mmx4*(m-x);
+    const double b2 = b*b;
+    const double b3 = b*b2;
+    const double b4 = b*b3;
+    const double b5 = b*b4;
 
-    const double m2 = pow(m,2);
-    const double m3 = m2*m;
-    const double m4 = m3*m;
-    const double m5 = m4*m;
-    const double m6 = m5*m;
-
-    const double s2 = pow(s,2);
+    const double s2 = s*s;
     const double s3 = s2*s;
     const double s4 = s3*s;
     const double s5 = s4*s;
     const double s6 = s5*s;
-    
-    const double poly1 =
-      ( (3.0*s2 + mmx2)*(11.0*s2 + mmx2)*(m-x) );
-    const double poly2 =
-      ( m6 +15.0*m4*s2 + 45.0*m2*s4 + 15.0*s6 - 6.0*m*(m4 + 10.0*m2*s2 + 15.0*s4)*x +
-15.0*(m4 + 6.0*m2*s2 +3.0*s4)*x2 - 20.0*m*(m2 + 3.0*s2)*x3 +
-15.0*(m2+s2)*x4 - 6.0*m*x5 + x6 );
-    const double poly3 =
-      ( m6 + 15.0*s6 - 6.0*m5*x + 45.0*s4*x2 + 15.0*s2*x4 + x6 +15.0*m4*(s2 + x2) -
-20.0*m3*(3.0*s2*x + x3) +15*m2*(3.0*s4 + 6.0*s2*x2 + x4) -
-6.0*m*(15.0*s4*x + 10.0*s2*x3 + x5) );
-    return ( s*gaus*( -s*poly1 +
-gaus*rootpiover2*(m-x)*poly2 -
-gaus*rootpiover2*poly3*erf(erf_parm) ) );
+
+    const double mmx = m-x;
+    const double mmx2 = mmx*mmx;
+    const double apm = a+m;
+    const double apm2 = apm*apm;
+    const double apm3 = apm2*apm;
+    const double apm4 = apm3*apm;
+    const double apmmx  = (a+m-x);
+    const double apmmx2 = apmmx*apmmx;
+
+    const double poly1 = ( 6*a5 - b5 - b3*(5*s2 + mmx2) + b4*mmx + 
+			   b2*(9*s2 + mmx2)*mmx + 
+			   (3*s2 +mmx2)*(11*s2 + mmx2)*mmx - 15*a4*(b - m +x) -
+			   b*( m4 + 12*m2*s2 + 15*s4 - 4*m*(m2 + 6*s2)*x +
+			       6*(m2 + 2*s2)*x2 - 4*m*x3 + x4 ) +
+			   20*a3*(b2 + 2*s2 + mmx2 - b*mmx) - 
+			   15*a2*( b3 + b*(3*s2 + mmx2) - (5*s2 + mmx2)*mmx -
+				   b2*mmx ) +
+			   6*a*( b4 + b2*(4*s2 + mmx) + 
+				 (s2 + mmx2)*(8*s2 + mmx2) - 
+				 b*(7*s2 + mmx2)*mmx -
+				 b3*mmx ) );
+    const double poly2 = (3*s2 + apmmx2)*(11*s2 + apmmx2)*apmmx;
+    const double poly3 = ( a6 + 6*a5*m + 15*a4*m2 + 20*a3*m3 + 15*a2*m4 +
+			   6*a*m5 + m6 + 15*a4*s2 + 60*a3*m*s2 + 90*a2*m2*s2 +
+			   60*a*m3*s2 +15*m4*s2 + 45*a2*s2 + 90*a*m*s4 + 
+			   45*m2*s4 + 15*s6 - 
+			   6*apm*(apm4 + 10*apm2*s2 +15*s4)*x + 
+			   15*(apm4 + 6*apm2*s2 +3*s4)*x2 -
+			   20*apm*(apm2 + 3*s2)*x3 + 15*(apm2 +s2)*x4 - 
+			   6*apm*x5 + x6);
+
+    return s2*( gaus_b*s*poly1 -
+		gaus_a*s*poly2 +
+		rootpiover2*poly3*(erf_b - erf_a) )/amb;
   }
 
   double poly_conv(const double x, const double mean,
@@ -658,8 +689,8 @@ gaus*rootpiover2*poly3*erf(erf_parm) ) );
       return fifth(x,mean,sigma,a,b);
       break;
     case 6:
-      //return sixth(x,mean,sigma);
-      //break;
+      return sixth(x,mean,sigma,a,b);
+      break;    
     default:
       assert(0 && "You requested a convolution that we haven't calculated yet!");
       return -1;
