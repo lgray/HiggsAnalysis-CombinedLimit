@@ -14,6 +14,7 @@ class SimpleCacheSentry : public RooAbsArg {
         SimpleCacheSentry(const SimpleCacheSentry &other, const char *newname = 0) ;
         RooSetProxy & deps() { return _deps; }
         const RooArgSet & deps() const { return _deps; }
+	Bool_t isIdentical(const RooAbsArg&, Bool_t);
         void addVar(const RooRealVar &var) { _deps.add(var); } 
         void addVars(const RooAbsCollection &vars) ; 
         void addFunc(const RooAbsArg &func, const RooArgSet *obs=0) ;

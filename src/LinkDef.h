@@ -22,6 +22,7 @@
 #include "../interface/RooATGCProcessScaling.h"
 #include "../interface/RooATGCSemiAnalyticPdf.h"
 #include "../interface/RooMultiPdf.h"
+#include "../interface/RooPhotosplinePdf.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -98,5 +99,6 @@
 #pragma link C++ class RooATGCProcessScaling+;
 #pragma link C++ class RooATGCSemiAnalyticPdf+;
 #pragma link C++ class RooMultiPdf+;
+#pragma link C++ class RooPhotosplinePdf+;
 
 #endif

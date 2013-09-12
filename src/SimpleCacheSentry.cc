@@ -44,4 +44,15 @@ void SimpleCacheSentry::addFunc(const RooAbsArg &func, const RooArgSet *obs)
     delete deps;
 }
 
+Bool_t SimpleCacheSentry::isIdentical(const RooAbsArg& other, 
+				      Bool_t assumeSameType){
+  if( !assumeSameType ) {
+    const SimpleCacheSentry* otherSentry = 
+      dynamic_cast<const SimpleCacheSentry*>(&other) ;
+    return otherSentry ? _deps.equals(otherSentry->deps()) : kFALSE ;
+  } else {
+    _deps.equals(((SimpleCacheSentry&)other).deps());
+  }
+  return kFALSE;
+}
 
