@@ -36,10 +36,18 @@ RooPhotosplinePdf::RooPhotosplinePdf(const char *name,
   _params("deps","deps",this),
   _splinefile(splinefile),
   _monodim(monodim),
-  _table(NULL)
-{ 
-  _params.add(params);
+  _table(new splinetable())
+{  
+  int i = 0;  
+  RooFIter iset; 
+  RooAbsArg* var = NULL;  
   readsplinefitstable(_splinefile.Data(),_table);
+  _params.add(params);
+  iset = _params.fwdIterator();
+  while( ( var = iset.next() ) && i < _table->ndim ) {
+    if( i == _monodim ) _mononame = var->GetName();
+    ++i;
+  }    
 } 
 
 RooPhotosplinePdf::RooPhotosplinePdf(const RooPhotosplinePdf& other, 
@@ -47,8 +55,9 @@ RooPhotosplinePdf::RooPhotosplinePdf(const RooPhotosplinePdf& other,
   RooAbsPdf(other,name),
   _params("deps",this,other._params),
   _splinefile(other._splinefile),
+  _mononame(other._mononame),
   _monodim(other._monodim),
-  _table(NULL)
+  _table(new splinetable())
 { 
   readsplinefitstable(_splinefile.Data(),_table);
 } 
@@ -60,7 +69,7 @@ RooPhotosplinePdf::~RooPhotosplinePdf() {
 Double_t RooPhotosplinePdf::evaluate() const 
 { 
   int i = 0, dims_deriv = 0x0, centers[_table->ndim];
-  double x[_table->ndim];
+  double x[_table->ndim], ret;
   RooFIter iset = _params.fwdIterator();
   RooAbsArg* var = NULL;
   RooAbsReal* casted = NULL;
@@ -70,39 +79,47 @@ Double_t RooPhotosplinePdf::evaluate() const
     x[i++] = casted->getVal();
   }
   tablesearchcenters(_table, x, centers);
-  return ndsplineeval(_table, x, centers, dims_deriv);
+  ret = ndsplineeval(_table, x, centers, dims_deriv);
+  return ( ret < 0 ? 1e-6 : ret );
 }
 
 Int_t RooPhotosplinePdf::
 getAnalyticalIntegral(RooArgSet& allVars,RooArgSet& analVars, 
-		      const char* /*rangeName*/) const {    
+		      const char* /*rangeName*/) const {  
+  if( _monodim != -1 ) {
+    RooArgSet monoset(_params[_mononame.Data()]);
+    if(matchArgs(allVars, analVars, monoset)) return 1;
+  }
   return 0;
 }
 
 Double_t RooPhotosplinePdf::
 analyticalIntegral(Int_t code, const char* rangeName) const {  
-  assert(code == 1 && _monodim != -1 && 
-	 "only integration for 1D parametric PDFs is supported right now");
-  
   int i = 0, centers[_table->ndim], centers1[_table->ndim];
   double x[_table->ndim], x1[_table->ndim];
   RooFIter iset = _params.fwdIterator();
   RooAbsArg* var = NULL;
   RooAbsReal* casted = NULL;
   RooAbsRealLValue* lval = NULL;
-  while( ( var = iset.next() ) && i < _table->ndim ) {
-    if( i == _monodim ) {
-      lval   = reinterpret_cast<RooAbsRealLValue*>(var);
-      x[i]   = (lval->hasMin() ? lval->getMin() : _table->extents[i][0]);
-      x1[i]  = (lval->hasMax() ? lval->getMax() : _table->extents[i][1]);
-    } else {
-      casted = reinterpret_cast<RooAbsReal*>(var);
-      x[i]   = x1[i] = casted->getVal();
-    }    
-    ++i;
+  switch( code ) {
+  case 1: // integration using directly the CDF in one dimension
+    while( ( var = iset.next() ) && i < _table->ndim ) {
+      if( i == _monodim ) {
+	lval   = reinterpret_cast<RooAbsRealLValue*>(var);
+	x[i]   = (lval->hasMin() ? lval->getMin() : _table->extents[i][0]);
+	x1[i]  = (lval->hasMax() ? lval->getMax() : _table->extents[i][1]);
+      } else {
+	casted = reinterpret_cast<RooAbsReal*>(var);
+	x[i]   = x1[i] = casted->getVal();
+      }    
+      ++i;
+    }  
+    tablesearchcenters(_table, x, centers);
+    tablesearchcenters(_table, x1, centers1);
+    return ( ndsplineeval(_table, x1, centers1, 0) - 
+	     ndsplineeval(_table,  x,  centers, 0)   );
+  default:
+    assert(NULL && "only analytical integration using the CDF is supported");
   }
-  tablesearchcenters(_table, x, centers);
-  tablesearchcenters(_table, x1, centers1);
-  return ( ndsplineeval(_table, x1, centers1, 0) - 
-	   ndsplineeval(_table,  x,  centers, 0)   );
+  return -1;
 }

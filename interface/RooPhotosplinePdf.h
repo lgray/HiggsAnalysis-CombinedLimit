@@ -9,6 +9,8 @@
 #include "TProfile2D.h"
 #include "TString.h"
   
+#include <vector>
+
 struct splinetable;
 
 class RooPhotosplinePdf : public RooAbsPdf {
@@ -37,8 +39,8 @@ public:
 protected:
   
   RooSetProxy  _params;
-  
-  TString _splinefile;
+    
+  TString _splinefile, _mononame;
 
   int _monodim;
     
@@ -48,7 +50,7 @@ protected:
   
 private:
   
-  ClassDef(RooPhotosplinePdf, 1) // aTGC function 
+  ClassDef(RooPhotosplinePdf, 1) // spline pdf
 };
 
 #endif
