@@ -23,6 +23,7 @@
 #include "../interface/RooATGCSemiAnalyticPdf.h"
 #include "../interface/RooMultiPdf.h"
 #include "../interface/RooPhotosplinePdf.h"
+#include "../interface/RooPhotospline.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -100,5 +101,6 @@
 #pragma link C++ class RooATGCSemiAnalyticPdf+;
 #pragma link C++ class RooMultiPdf+;
 #pragma link C++ class RooPhotosplinePdf+;
+#pragma link C++ class RooPhotospline+;
 
 #endif
