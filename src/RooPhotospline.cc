@@ -69,7 +69,7 @@ RooPhotospline::~RooPhotospline() {
 Double_t RooPhotospline::evaluate() const 
 { 
   int i = 0, dims_deriv = 0x0, centers[_table->ndim];
-  double x[_table->ndim], ret;
+  double x[_table->ndim];
   RooFIter iset = _params.fwdIterator();
   RooAbsArg* var = NULL;
   RooAbsReal* casted = NULL;
@@ -79,8 +79,7 @@ Double_t RooPhotospline::evaluate() const
     x[i++] = casted->getVal();
   }
   tablesearchcenters(_table, x, centers);
-  ret = ndsplineeval(_table, x, centers, dims_deriv);
-  return ( ret < 0 ? 1e-6 : ret );
+  return ndsplineeval(_table, x, centers, dims_deriv);
 }
 
 Int_t RooPhotospline::
