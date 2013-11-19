@@ -83,12 +83,12 @@ void RooATGCSemiAnalyticPdf::initializeNormalization(const std::string& rName,
 						     const RooAbsReal& dep,
 						     const RooAbsReal& shape) const {
   integral_basis[rName] = std::vector<double>();
-  for( int i = 0; i<=6; ++i ) {
+  for( int i = 0; i<=6; ++i ) {    
     RooFormulaVar temp("temp","integral of x^i * shape",
 		       Form("@1*@0**%i",i),RooArgList(dep,shape));
     RooAbsReal* integral = temp.createIntegral(RooArgSet(dep),RooArgSet(),rName.c_str());
     integral_basis[rName].push_back(integral->getVal());
-    delete integral;
+    delete integral;  
   }
 }
 
@@ -99,15 +99,22 @@ void RooATGCSemiAnalyticPdf::readProfiles(TDirectory& dir) const {
     
     if (P_dk[i]) delete P_dk[i];
     TString dkname = TString::Format("p%i_lambda_dkg", i);
-    P_dk[i] = dynamic_cast<TProfile2D *>(dir.Get(dkname)->Clone(dkname+"new"));
-    P_dk[i]->SetDirectory(0);
+    if( dir.Get(dkname) ) {
+      P_dk[i] = dynamic_cast<TProfile2D *>(dir.Get(dkname)->Clone(dkname+"new"));
+      P_dk[i]->SetDirectory(0);
+    }
     if (P_dg1[i]) delete P_dg1[i];
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
-    P_dg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dg1name)->Clone(dg1name+"new"));
-    P_dg1[i]->SetDirectory(0);
+    if( dir.Get(dg1name) ) {
+      P_dg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dg1name)->Clone(dg1name+"new"));
+      P_dg1[i]->SetDirectory(0);
+    }
+    if (P_dkdg1[i]) delete P_dkdg1[i];
     TString dkdg1name = TString::Format("p%i_dkg_dg1", i);
-    P_dkdg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dkdg1name)->Clone(dkdg1name+"new"));
-    P_dkdg1[i]->SetDirectory(0);
+    if( dir.Get(dkdg1name) ) {
+      P_dkdg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dkdg1name)->Clone(dkdg1name+"new"));
+      P_dkdg1[i]->SetDirectory(0);
+    }
   }
 
   // for (i=0; i<=6; i++) {
@@ -119,14 +126,20 @@ void RooATGCSemiAnalyticPdf::readProfiles(RooATGCSemiAnalyticPdf const& other) {
 
   for (int i = 0; i<=6; ++i) {
     TString dkname = TString::Format("p%i_lambda_dkg", i);
-    P_dk[i] = dynamic_cast<TProfile2D *>(other.P_dk[i]->Clone(dkname+"new"));
-    P_dk[i]->SetDirectory(0);
+    if( other.P_dk[i] ) {
+      P_dk[i] = dynamic_cast<TProfile2D *>(other.P_dk[i]->Clone(dkname+"new"));
+      P_dk[i]->SetDirectory(0);
+    }
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
-    P_dg1[i] = dynamic_cast<TProfile2D *>(other.P_dg1[i]->Clone(dg1name+"new"));
-    P_dg1[i]->SetDirectory(0);
+    if( other.P_dg1[i] ) {
+      P_dg1[i] = dynamic_cast<TProfile2D *>(other.P_dg1[i]->Clone(dg1name+"new"));
+      P_dg1[i]->SetDirectory(0);
+    }
     TString dkdg1name = TString::Format("p%i_dkg_dg1", i);
-    P_dkdg1[i] = dynamic_cast<TProfile2D *>(other.P_dkdg1[i]->Clone(dkdg1name+"new"));
-    P_dkdg1[i]->SetDirectory(0);
+    if( other.P_dkdg1[i] ) {
+      P_dkdg1[i] = dynamic_cast<TProfile2D *>(other.P_dkdg1[i]->Clone(dkdg1name+"new"));
+      P_dkdg1[i]->SetDirectory(0);
+    }
   }
 }
 
@@ -189,7 +202,9 @@ Double_t RooATGCSemiAnalyticPdf::evaluate() const
   double ret(0.);
   for(int i = 0; i<= 6; i++) {
     // std::cout << P_dk[i]->GetName() << '\n';
-    ret += P[i]->Interpolate(v1, v2)*TMath::Power(x, i)*SM_shape;
+    if( P[i] ) {
+      ret += P[i]->Interpolate(v1, v2)*TMath::Power(x, i)*SM_shape;
+    }
   }
 
   if (ret < 0.) ret = 0.;
@@ -253,7 +268,7 @@ analyticalIntegral(Int_t code, const char* rangeName) const {
 
   double ret(0.);
   for(int i = 0; i<= 6; ++i) {
-    ret += P[i]->Interpolate(v1,v2)*integral_basis[rName][i];
+    if( P[i] ) ret += P[i]->Interpolate(v1,v2)*integral_basis[rName][i];
   }
   return ret;
 }

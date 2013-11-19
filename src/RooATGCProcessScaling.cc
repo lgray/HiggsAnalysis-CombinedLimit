@@ -97,15 +97,21 @@ void RooATGCProcessScaling::readProfiles(TDirectory& dir) const {
     
     if (P_dk[i]) delete P_dk[i];
     TString dkname = TString::Format("p%i_lambda_dkg", i);
-    P_dk[i] = dynamic_cast<TProfile2D *>(dir.Get(dkname)->Clone(dkname+"new"));
-    P_dk[i]->SetDirectory(0);
+    if( dir.Get(dkname) ) {
+      P_dk[i] = dynamic_cast<TProfile2D *>(dir.Get(dkname)->Clone(dkname+"new"));
+      P_dk[i]->SetDirectory(0);
+    }
     if (P_dg1[i]) delete P_dg1[i];
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
-    P_dg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dg1name)->Clone(dg1name+"new"));
-    P_dg1[i]->SetDirectory(0);
+    if( dir.Get(dg1name) ) {
+      P_dg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dg1name)->Clone(dg1name+"new"));
+      P_dg1[i]->SetDirectory(0);
+    }
     TString dkdg1name = TString::Format("p%i_dkg_dg1", i);
-    P_dkdg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dkdg1name)->Clone(dkdg1name+"new"));
-    P_dkdg1[i]->SetDirectory(0);
+    if( dir.Get(dkdg1name) ) {
+      P_dkdg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dkdg1name)->Clone(dkdg1name+"new"));
+      P_dkdg1[i]->SetDirectory(0);
+    }
   }
 
   // for (i=0; i<=6; i++) {
@@ -117,14 +123,20 @@ void RooATGCProcessScaling::readProfiles(RooATGCProcessScaling const& other) {
 
   for (int i = 0; i<=6; ++i) {    
     TString dkname = TString::Format("p%i_lambda_dkg", i);
-    P_dk[i] = dynamic_cast<TProfile2D *>(other.P_dk[i]->Clone(dkname+"new"));
-    P_dk[i]->SetDirectory(0);
+    if( other.P_dk[i] ) {
+      P_dk[i] = dynamic_cast<TProfile2D *>(other.P_dk[i]->Clone(dkname+"new"));
+      P_dk[i]->SetDirectory(0);
+    }
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
-    P_dg1[i] = dynamic_cast<TProfile2D *>(other.P_dg1[i]->Clone(dg1name+"new"));
-    P_dg1[i]->SetDirectory(0);
+    if( other.P_dg1[i] ) {
+      P_dg1[i] = dynamic_cast<TProfile2D *>(other.P_dg1[i]->Clone(dg1name+"new"));
+      P_dg1[i]->SetDirectory(0);
+    }
     TString dkdg1name = TString::Format("p%i_dkg_dg1", i);
-    P_dkdg1[i] = dynamic_cast<TProfile2D *>(other.P_dkdg1[i]->Clone(dkdg1name+"new"));
-    P_dkdg1[i]->SetDirectory(0);
+    if( other.P_dkdg1[i] ) {
+      P_dkdg1[i] = dynamic_cast<TProfile2D *>(other.P_dkdg1[i]->Clone(dkdg1name+"new"));
+      P_dkdg1[i]->SetDirectory(0);
+    }
   }
 }
 
@@ -184,7 +196,7 @@ Double_t RooATGCProcessScaling::evaluate() const
 
   double ret(0.);
   for(int i = 0; i<= 6; i++) {
-    ret += P[i]->Interpolate(v1,v2)*integral_basis[i];
+    if( P[i] ) ret += P[i]->Interpolate(v1,v2)*integral_basis[i];
   }
   return ret/SM_integral;
 }

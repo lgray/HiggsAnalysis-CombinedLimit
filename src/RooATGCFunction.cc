@@ -78,8 +78,10 @@ void RooATGCFunction::readProfiles(TDirectory& dir) const {
     
     if (P_dk[i]) delete P_dk[i];
     TString dkname = TString::Format("p%i_lambda_dkg", i);
-    P_dk[i] = dynamic_cast<TProfile2D *>(dir.Get(dkname)->Clone(dkname+"new"));
-    P_dk[i]->SetDirectory(0);
+    if( dir.Get(dkname) ) {
+      P_dk[i] = dynamic_cast<TProfile2D *>(dir.Get(dkname)->Clone(dkname+"new"));
+      P_dk[i]->SetDirectory(0);
+    }
     if (P_dg1[i]) delete P_dg1[i];
     TString dg1name = TString::Format("p%i_lambda_dg1", i);
     P_dg1[i] = dynamic_cast<TProfile2D *>(dir.Get(dg1name)->Clone(dg1name+"new"));
